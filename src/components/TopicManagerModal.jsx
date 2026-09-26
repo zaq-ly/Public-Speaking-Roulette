@@ -21,6 +21,8 @@ const PRESET_TOPICS = [
   { id: 'preset-8', title: 'Pesan Singkat 3 Menit untuk Generasi Muda', category: 'Ice Breaking' },
 ];
 
+const STANDARD_CATEGORIES = ['Umum', 'Public Speaking', 'Bisnis', 'Ice Breaking', 'Kepemimpinan'];
+
 export default function TopicManagerModal({
   isOpen,
   onClose,
@@ -39,7 +41,8 @@ export default function TopicManagerModal({
   // Inline edit state
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
-  const [editCategory, setEditCategory] = useState('');
+  const [editCategoryType, setEditCategoryType] = useState('Umum');
+  const [editCustomCategory, setEditCustomCategory] = useState('');
 
   // Delete state
   const [deletingId, setDeletingId] = useState(null);
@@ -117,13 +120,25 @@ export default function TopicManagerModal({
   const startEdit = (topic) => {
     setEditingId(topic.id);
     setEditTitle(topic.title);
-    setEditCategory(topic.category || 'Umum');
+    const cat = topic.category || 'Umum';
+    if (STANDARD_CATEGORIES.includes(cat)) {
+      setEditCategoryType(cat);
+      setEditCustomCategory('');
+    } else {
+      setEditCategoryType('custom');
+      setEditCustomCategory(cat);
+    }
   };
 
   const saveEdit = (id) => {
     if (!editTitle.trim()) return;
+    const finalCategory =
+      editCategoryType === 'custom'
+        ? editCustomCategory.trim() || 'Umum'
+        : editCategoryType;
+
     const updated = topics.map((t) =>
-      t.id === id ? { ...t, title: editTitle.trim(), category: editCategory.trim() || 'Umum' } : t
+      t.id === id ? { ...t, title: editTitle.trim(), category: finalCategory } : t
     );
     onUpdateTopics(updated);
     setEditingId(null);
@@ -381,12 +396,29 @@ export default function TopicManagerModal({
                         className="flex-1 px-3 py-1.5 rounded-lg border border-zinc-300 text-xs text-zinc-900 focus:outline-none"
                         autoFocus
                       />
-                      <input
-                        type="text"
-                        value={editCategory}
-                        onChange={(e) => setEditCategory(e.target.value)}
-                        className="w-28 px-2.5 py-1.5 rounded-lg border border-zinc-300 text-xs text-zinc-900 focus:outline-none"
-                      />
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <select
+                          value={editCategoryType}
+                          onChange={(e) => setEditCategoryType(e.target.value)}
+                          className="px-2.5 py-1.5 rounded-lg border border-zinc-200 bg-white text-zinc-800 text-xs cursor-pointer focus:outline-none focus:border-zinc-400"
+                        >
+                          {STANDARD_CATEGORIES.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                          ))}
+                          <option value="custom">+ Kategori Lain...</option>
+                        </select>
+
+                        {editCategoryType === 'custom' && (
+                          <input
+                            type="text"
+                            placeholder="Kategori"
+                            value={editCustomCategory}
+                            onChange={(e) => setEditCustomCategory(e.target.value)}
+                            className="w-24 px-2.5 py-1.5 rounded-lg border border-zinc-200 bg-white text-xs text-zinc-800 focus:outline-none focus:border-zinc-400"
+                            autoFocus
+                          />
+                        )}
+                      </div>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => saveEdit(topic.id)}
