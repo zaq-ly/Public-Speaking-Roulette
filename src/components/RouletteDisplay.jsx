@@ -11,6 +11,7 @@ export default function RouletteDisplay({
   onOpenSettings,
   isSpinning,
   soundEnabled,
+  isFullscreen = false,
 }) {
   const [displayTitle, setDisplayTitle] = useState(
     currentTopic
@@ -82,25 +83,51 @@ export default function RouletteDisplay({
 
   const getTitleTypography = () => {
     if (isSpinning) {
-      return 'text-xl sm:text-2xl md:text-3xl font-black text-zinc-600 blur-[1px] leading-snug';
+      return isFullscreen
+        ? 'text-3xl sm:text-5xl md:text-6xl font-black text-zinc-600 blur-[1px] leading-snug'
+        : 'text-2xl sm:text-3xl md:text-4xl font-black text-zinc-600 blur-[1px] leading-snug';
     }
     if (!currentTopic) {
-      return 'text-xl sm:text-2xl md:text-3xl font-bold text-zinc-900 leading-relaxed text-balance';
+      return isFullscreen
+        ? 'text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 leading-relaxed text-balance'
+        : 'text-xl sm:text-2xl md:text-3xl font-bold text-zinc-900 leading-relaxed text-balance';
     }
+
+    if (isFullscreen) {
+      if (titleLength > 140) {
+        return 'text-lg sm:text-xl md:text-2xl font-bold text-zinc-950 leading-relaxed';
+      }
+      if (titleLength > 75) {
+        return 'text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-950 leading-snug';
+      }
+      if (titleLength > 35) {
+        return 'text-3xl sm:text-4xl md:text-5xl font-black text-zinc-950 leading-snug text-balance';
+      }
+      return 'text-4xl sm:text-6xl md:text-7xl font-black text-zinc-950 leading-tight text-balance';
+    }
+
+    // Normal mode (non-fullscreen)
     if (titleLength > 140) {
       return 'text-base sm:text-lg md:text-xl font-bold text-zinc-950 leading-relaxed';
     }
     if (titleLength > 75) {
       return 'text-lg sm:text-xl md:text-2xl font-extrabold text-zinc-950 leading-snug';
     }
-    return 'text-2xl sm:text-3xl md:text-4xl font-black text-zinc-950 leading-snug text-balance';
+    if (titleLength > 35) {
+      return 'text-2xl sm:text-3xl md:text-4xl font-black text-zinc-950 leading-snug text-balance';
+    }
+    return 'text-3xl sm:text-4xl md:text-5xl font-black text-zinc-950 leading-snug text-balance';
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-0">
       {/* Transparent Liquid Glass Stage Card */}
       <div
-        className={`ios-liquid-glass w-full max-w-2xl max-h-[62vh] sm:max-h-[66vh] p-6 sm:p-10 text-center transition-all duration-500 flex flex-col items-center justify-center gap-5 sm:gap-6 overflow-hidden ${
+        className={`ios-liquid-glass w-full ${
+          isFullscreen
+            ? 'max-w-4xl max-h-[80vh] sm:max-h-[84vh] p-6 sm:p-10 md:p-12'
+            : 'max-w-2xl max-h-[75vh] sm:max-h-[80vh] p-6 sm:p-8 md:p-10'
+        } text-center transition-all duration-500 flex flex-col items-center justify-center gap-4 sm:gap-6 overflow-hidden ${
           isSpinning ? 'scale-[0.98] opacity-85' : 'scale-100 opacity-100'
         }`}
       >
@@ -112,7 +139,7 @@ export default function RouletteDisplay({
         )}
 
         {/* Topic Title Wrapper with Max Height */}
-        <div className="relative z-10 w-full max-h-[28vh] sm:max-h-[32vh] overflow-y-auto px-2 py-1 flex items-center justify-center [scrollbar-width:thin]">
+        <div className={`relative z-10 w-full ${isFullscreen ? 'max-h-[38vh] sm:max-h-[44vh]' : 'max-h-[28vh] sm:max-h-[34vh]'} overflow-y-auto px-2 py-1 flex items-center justify-center [scrollbar-width:thin]`}>
           <h2
             className={`tracking-tight transition-all duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] w-full max-w-full break-words [overflow-wrap:anywhere] [word-break:normal] my-auto ${getTitleTypography()}`}
           >

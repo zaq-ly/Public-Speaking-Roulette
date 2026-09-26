@@ -8,6 +8,7 @@ export default function SpeakerTimer({
   autoStart = true,
   soundEnabled = true,
   topicKey = 0,
+  isFullscreen = false,
   onBack,
 }) {
   const [timeLeft, setTimeLeft] = useState(duration);
@@ -84,22 +85,24 @@ export default function SpeakerTimer({
   const titleLength = currentTopic?.title ? currentTopic.title.length : 0;
   const getTimerTitleTypography = () => {
     if (titleLength > 140) {
-      return 'text-base sm:text-lg md:text-xl font-bold leading-relaxed';
+      return 'text-sm sm:text-base md:text-lg font-bold leading-relaxed';
     }
     if (titleLength > 75) {
-      return 'text-lg sm:text-xl md:text-2xl font-extrabold leading-snug';
+      return 'text-base sm:text-lg md:text-xl font-extrabold leading-snug';
     }
-    return 'text-2xl sm:text-3xl md:text-4xl font-black leading-snug text-balance';
+    return isFullscreen
+      ? 'text-xl sm:text-2xl md:text-3xl font-black leading-snug text-balance'
+      : 'text-lg sm:text-xl md:text-2xl font-black leading-snug text-balance';
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-0 animate-in fade-in duration-300">
       {/* Transparent Liquid Glass Stage Card */}
-      <div className="ios-liquid-glass w-full max-w-2xl max-h-[70vh] sm:max-h-[74vh] p-6 sm:p-9 flex flex-col items-center gap-4 sm:gap-5 text-center overflow-hidden">
+      <div className={`ios-liquid-glass w-full ${isFullscreen ? 'max-w-3xl max-h-[86vh] p-5 sm:p-8' : 'max-w-2xl max-h-[82vh] sm:max-h-[85vh] p-5 sm:p-7 md:p-8'} flex flex-col items-center gap-3 sm:gap-4 text-center overflow-y-auto [scrollbar-width:none] transition-all duration-300`}>
         {/* Topik Pembahasan Header */}
         {currentTopic && (
-          <div className="relative z-10 w-full max-w-full overflow-hidden flex flex-col items-center gap-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 border border-white/50 shadow-xs backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-zinc-900 max-w-full truncate shrink-0">
+          <div className="relative z-10 w-full max-w-full shrink-0 flex flex-col items-center gap-1.5 sm:gap-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/50 shadow-xs backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-zinc-900 max-w-full truncate shrink-0">
               <Clock className="w-3.5 h-3.5 shrink-0" />
               <span className="shrink-0">Topik Pembahasan</span>
               {currentTopic.category && (
@@ -110,7 +113,7 @@ export default function SpeakerTimer({
               )}
             </div>
 
-            <div className="w-full max-h-[16vh] sm:max-h-[20vh] overflow-y-auto px-2 flex items-center justify-center [scrollbar-width:thin]">
+            <div className="w-full max-h-[14vh] sm:max-h-[18vh] overflow-y-auto px-2 flex items-center justify-center [scrollbar-width:thin]">
               <h2 className={`text-zinc-950 tracking-tight drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] w-full max-w-xl mx-auto break-words [overflow-wrap:anywhere] [word-break:normal] my-auto ${getTimerTitleTypography()}`}>
                 "{currentTopic.title}"
               </h2>
@@ -122,10 +125,14 @@ export default function SpeakerTimer({
         <div className="relative z-10 w-full h-px bg-zinc-900/10 my-0.5 shrink-0" />
 
         {/* Timer Section */}
-        <div className="relative z-10 flex flex-col items-center gap-3.5 w-full max-w-md">
+        <div className="relative z-10 flex flex-col items-center gap-2 sm:gap-3 w-full max-w-md shrink-0">
           {/* Big Digital Countdown */}
           <div
-            className={`font-mono text-6xl sm:text-7xl md:text-8xl font-black tracking-tight select-none tabular-nums drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] leading-none transition-colors ${
+            className={`font-mono font-black tracking-tight select-none tabular-nums drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] leading-none transition-all duration-300 ${
+              isFullscreen
+                ? 'text-7xl sm:text-8xl md:text-9xl my-1 sm:my-2'
+                : 'text-6xl sm:text-7xl md:text-8xl'
+            } ${
               isTimeUp
                 ? 'text-red-600 animate-pulse'
                 : isLowTime
@@ -137,8 +144,8 @@ export default function SpeakerTimer({
           </div>
 
           {/* Compact Sleek Progress Indicator */}
-          <div className="w-full max-w-[220px] sm:max-w-[260px] flex flex-col gap-1.5 my-0.5">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-zinc-600 px-1">
+          <div className="w-full max-w-[170px] sm:max-w-[210px] flex flex-col gap-1 my-0.5 opacity-90">
+            <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-zinc-500 px-1">
               <span className="inline-flex items-center gap-1.5">
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
@@ -153,10 +160,10 @@ export default function SpeakerTimer({
                 />
                 {isTimeUp ? 'Waktu Habis' : isLowTime ? 'Segera Habis' : isRunning ? 'Berjalan' : 'Siap'}
               </span>
-              <span className="font-mono text-zinc-700 tabular-nums">{Math.round(percentage)}%</span>
+              <span className="font-mono text-zinc-600 tabular-nums">{Math.round(percentage)}%</span>
             </div>
 
-            <div className="w-full h-1.5 bg-zinc-900/10 rounded-full overflow-hidden backdrop-blur-xs p-0">
+            <div className="w-full h-1 bg-zinc-900/10 rounded-full overflow-hidden backdrop-blur-xs p-0">
               <div
                 className={`h-full rounded-full transition-all duration-500 ease-out ${
                   isTimeUp
@@ -170,43 +177,43 @@ export default function SpeakerTimer({
             </div>
           </div>
 
-          {/* Controls - iOS Glass Pill & Button */}
-          <div className="flex items-center gap-3">
+          {/* Compact Controls - Subordinate to timer */}
+          <div className="flex items-center gap-2.5 mt-0.5">
             <button
               onClick={toggleRun}
-              className={`flex items-center gap-2.5 px-8 py-3.5 sm:py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-105 active:scale-95 ${
+              className={`flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm transition-all duration-300 cursor-pointer shadow-md hover:scale-105 active:scale-95 ${
                 isRunning
                   ? 'bg-zinc-800 text-white hover:bg-zinc-700'
                   : 'bg-zinc-950 text-white hover:bg-zinc-800'
               }`}
             >
-              {isRunning ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
+              {isRunning ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
               <span>{isRunning ? 'Jeda' : isTimeUp ? 'Ulangi' : 'Mulai Timer'}</span>
             </button>
 
             <button
               onClick={resetTimer}
-              className="p-3.5 sm:p-4 rounded-full bg-white/20 hover:bg-white/35 text-zinc-900 border border-white/50 backdrop-blur-sm transition-all shadow-xs cursor-pointer hover:scale-105 active:scale-95"
+              className="p-2 sm:p-2.5 rounded-full bg-white/20 hover:bg-white/35 text-zinc-800 border border-white/50 backdrop-blur-sm transition-all shadow-xs cursor-pointer hover:scale-105 active:scale-95"
               title="Reset Waktu"
             >
-              <RotateCcw className="w-5 h-5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
           </div>
 
           {/* Shortcut hint */}
-          <p className="text-[11px] text-zinc-700 font-semibold select-none">
-            Tekan <kbd className="px-2 py-0.5 rounded-md bg-white/20 border border-white/50 font-mono text-[10px] text-zinc-900 shadow-xs">Spasi</kbd> untuk Jeda / Lanjut
+          <p className="text-[10px] text-zinc-500 font-medium select-none">
+            Tekan <kbd className="px-1.5 py-0.5 rounded bg-white/30 border border-white/50 font-mono text-[9px] text-zinc-800 shadow-xs">Spasi</kbd> untuk Jeda / Lanjut
           </p>
         </div>
 
         {/* Back Button */}
         {onBack && (
-          <div className="relative z-10 pt-2 border-t border-zinc-900/15 w-full flex justify-center">
+          <div className="relative z-10 pt-1 border-t border-zinc-900/10 w-full flex justify-center shrink-0">
             <button
               onClick={onBack}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-zinc-700 hover:text-zinc-950 hover:bg-white/30 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-zinc-600 hover:text-zinc-950 hover:bg-white/30 transition-colors cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               <span>Kembali ke Acak Topik</span>
             </button>
           </div>

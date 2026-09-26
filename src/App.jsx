@@ -282,11 +282,23 @@ export default function App() {
       </header>
 
       {/* Web Title (Fixed & Static) */}
-      <div className="w-full text-center px-4 shrink-0 z-10">
-        <h1 className="font-black text-3xl sm:text-4xl md:text-5xl tracking-tight text-zinc-900 drop-shadow-xs">
+      <div className={`w-full text-center px-4 shrink-0 z-10 transition-all duration-300 ${isFullscreen ? 'mt-4 sm:mt-6 mb-1 sm:mb-2' : 'mt-2 sm:mt-3.5'}`}>
+        <h1
+          className={`font-black tracking-tight text-zinc-900 drop-shadow-xs transition-all duration-300 ${
+            isFullscreen
+              ? 'text-4xl sm:text-6xl md:text-7xl'
+              : 'text-3xl sm:text-4xl md:text-5xl'
+          }`}
+        >
           Latihan Public Speaking
         </h1>
-        <p className="mt-1 sm:mt-1.5 text-sm sm:text-base text-zinc-800 font-semibold drop-shadow-xs">
+        <p
+          className={`text-zinc-800 drop-shadow-xs transition-all duration-300 ${
+            isFullscreen
+              ? 'mt-1.5 text-sm sm:text-base md:text-lg font-semibold'
+              : 'mt-1 sm:mt-1.5 text-sm sm:text-base font-semibold'
+          }`}
+        >
           Acak topik spontan dan latih kemampuan berbicara Anda
         </p>
       </div>
@@ -303,6 +315,7 @@ export default function App() {
             onOpenSettings={() => setIsTopicModalOpen(true)}
             isSpinning={isSpinning}
             soundEnabled={soundEnabled}
+            isFullscreen={isFullscreen}
           />
         ) : (
           <SpeakerTimer
@@ -311,6 +324,7 @@ export default function App() {
             autoStart={autoStartTimer}
             soundEnabled={soundEnabled}
             topicKey={topicKey}
+            isFullscreen={isFullscreen}
             onBack={() => {
               setActiveView('roulette');
             }}
